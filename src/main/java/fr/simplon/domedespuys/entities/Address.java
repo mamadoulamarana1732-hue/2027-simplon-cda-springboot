@@ -33,7 +33,6 @@ public class Address {
     @Column(nullable = false, length = 100)
     private String lastname;
 
-    @Column(nullable = true, length = 20)
     private String phone;
 
     @Column(nullable = false, updatable = false)

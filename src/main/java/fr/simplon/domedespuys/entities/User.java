@@ -34,7 +34,7 @@ public class User {
     @Column(nullable = false, length = 100)
     private String lastname;
 
-    @Column(nullable = true, unique = true, length = 20)
+    @Column(length = 20)
     private String phone;
 
     @Column(nullable = false, updatable = false)
