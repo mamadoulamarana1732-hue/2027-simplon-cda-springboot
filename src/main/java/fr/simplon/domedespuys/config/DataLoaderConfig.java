@@ -1,15 +1,9 @@
 package fr.simplon.domedespuys.config;
 
-import java.text.Normalizer;
 import com.github.javafaker.Faker;
-import fr.simplon.domedespuys.entities.Address;
-import fr.simplon.domedespuys.entities.Brand;
-import fr.simplon.domedespuys.entities.Product;
-import fr.simplon.domedespuys.entities.User;
-import fr.simplon.domedespuys.repositories.AddressRepository;
-import fr.simplon.domedespuys.repositories.BrandRepository;
-import fr.simplon.domedespuys.repositories.ProductRepository;
-import fr.simplon.domedespuys.repositories.UserRepository;
+import fr.simplon.domedespuys.entities.*;
+import fr.simplon.domedespuys.repositories.*;
+import fr.simplon.domedespuys.utils.Slugger;
 import lombok.AllArgsConstructor;
 import org.jspecify.annotations.NonNull;
 import org.springframework.boot.CommandLineRunner;
@@ -17,60 +11,50 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Locale;
-import java.util.Optional;
-import java.util.Random;
-import java.util.concurrent.TimeUnit;
-
+import java.util.*;
 
 @Component
 @AllArgsConstructor
 public class DataLoaderConfig implements CommandLineRunner {
-    private UserRepository userRepository;
-    private BrandRepository brandRepository;
-    private AddressRepository addressRepository;
-    private ProductRepository productRepository;
-    private String slugify(String text) {
-        return Normalizer.normalize(text, Normalizer.Form.NFD)
-                .replaceAll("\\p{M}", "")          // supprime les accents
-                .toLowerCase()
-                .replaceAll("[^a-z0-9]+", "-")     // remplace tout le reste par un tiret
-                .replaceAll("(^-|-$)", "");        // enlève les tirets au début et à la fin
-    }
 
+    private UserRepository userRepository;
+    private AddressRepository addressRepository;
+    private BrandRepository brandRepository;
+    private ProductRepository productRepository;
+    private ImageRepository imageRepository;
+    private PurchaseRepository purchaseRepository;
+    private PurchaseProductRepository purchaseProductRepository;
+    private Slugger slugger;
+
+    private final int NB_USERS = 200;
 
     @Override
     public void run(String @NonNull ... args) {
         createUsers();
-        createBrands();
         createAddress();
+        createBrand();
         createProduct();
+        createImages();
+        createPurchase();
+        createPurchaseProduct();
     }
 
-    private void createUsers() {
-        if (0 == userRepository.count()) {
-            Faker faker = new Faker(Locale.of("fr"));
+    private void createPurchaseProduct() {
+        if (0 == purchaseProductRepository.count()) {
+            List<Purchase> purchases = purchaseRepository.findAll();
+            for (Purchase purchase : purchases) {
+                createPurchaseProductByPurchase(purchase);
 
-            for (int i = 0; i < 100; i++) {
-                User user = new User();
-                user.setFirstname(faker.name().firstName());
-                user.setLastname(faker.name().lastName());
-                String email = faker.internet().emailAddress((user.getFirstname() + "." + user.getLastname()).toLowerCase());
-                user.setEmail(email);
-                user.setPassword(faker.internet().password(12, 20));
-                if (hasProbability(2, 3)) {
-                    user.setPhone(faker.phoneNumber().phoneNumber());
-                }
-                LocalDateTime localDate = new java.sql.Date(faker.date().birthday(0, 5).getTime()).toLocalDate().atTime(0, 0);
-                user.setCreatedAt(localDate);
-                userRepository.save(user);
+                do {
+                    createPurchaseProductByPurchase(purchase);
+                } while(hasProbability(1, 3));
             }
 
-            userRepository.flush();
+            purchaseProductRepository.flush();
         }
     }
 
-    private void createBrands() {
+    private void createBrand() {
         if (0 == brandRepository.count()) {
             Faker faker = new Faker(Locale.of("fr"));
 
@@ -78,7 +62,7 @@ public class DataLoaderConfig implements CommandLineRunner {
                 Brand brand = new Brand();
                 brand.setLabel(faker.company().name());
                 brand.setLogo(faker.company().logo());
-                brand.setSlug(brand.getLabel().toLowerCase().replace(" ", "-"));
+                brand.setSlug(slugger.slugify(brand.getLabel()));
                 brandRepository.save(brand);
             }
 
@@ -89,27 +73,24 @@ public class DataLoaderConfig implements CommandLineRunner {
     private void createAddress() {
         if (0 == addressRepository.count()) {
             Faker faker = new Faker(Locale.of("fr"));
-            Random random = new Random();
 
-
-            for (int i = 0; i < 100; i++) {
+            for (int i = 0; i < (NB_USERS + 150); i++) {
                 Address address = new Address();
-                address.setCity(faker.country().capital());
-                address.setCountry(faker.country().name());
-                address.setLine(faker.address().buildingNumber());
-                address.setZipCode(faker.file().extension());
-                address.setExtraLine(faker.address().buildingNumber() + address.getCity().toLowerCase());
+                address.setCity(faker.address().city());
+                address.setCountry("France");
+                address.setZipCode(faker.address().zipCode());
+                address.setLine(faker.address().streetAddress());
 
+                if (hasProbability(1, 4)) {
+                    address.setExtraLine(faker.address().buildingNumber());
+                }
 
-
+                Random random = new Random();
                 Long userId = random.nextLong(1, 100);
                 Optional<User> optionalUser = userRepository.findById(userId);
-
+                // Si l'objet attendu via notre "Optional" est présent (ifPresent),
+                // alors on appelle la fonction "setUser" depuis l'objet "address" avec l'objet présent dans l'optional
                 optionalUser.ifPresent(address::setUser);
-
-                if (address.getUser() == null) {
-                    continue;
-                }
 
                 if (hasProbability(2, 4)) {
                     address.setFirstname(address.getUser().getFirstname());
@@ -131,27 +112,51 @@ public class DataLoaderConfig implements CommandLineRunner {
             addressRepository.flush();
         }
     }
+
+    private void createUsers() {
+        if (0 == userRepository.count()) {
+            Faker faker = new Faker(Locale.of("fr"));
+
+            for (int i = 0; i < NB_USERS; i++) {
+                User user = new User();
+                user.setFirstname(faker.name().firstName());
+                user.setLastname(faker.name().lastName());
+                String email = faker.internet().emailAddress((user.getFirstname() + "." + user.getLastname()).toLowerCase());
+                user.setEmail(email);
+                user.setPassword(faker.internet().password(12, 20));
+                if (hasProbability(2, 3)) {
+                    user.setPhone(faker.phoneNumber().phoneNumber());
+                }
+                user.setCreatedAt(getRandomDate(faker, 0, 5));
+                userRepository.save(user);
+            }
+
+            userRepository.flush();
+        }
+    }
+
     private void createProduct() {
         if (0 == productRepository.count()) {
             Faker faker = new Faker(Locale.of("fr"));
-            Random random = new Random();
+            List<String> productsUsed = new ArrayList<>();
 
             for (int i = 0; i < 300; i++) {
-                Product product = new Product();
-                product.setLabel(faker.book().title()+i);
-                product.setCreatedAt(getRandomDate(faker, 0, 10));
-                product.setPrice((float) faker.number().numberBetween(100, 300));
-                product.setSlug(slugify(product.getLabel()));
-                product.setDescription(faker.book().author() + " : " + faker.lorem().characters(100, 1000));
+                String name;
+                do {
+                    name = faker.commerce().productName();
+                } while (productsUsed.contains(name));
+                productsUsed.add(name);
 
-                Long brandId = random.nextLong(59, 107);
-                Optional<Brand> optionalBrand = brandRepository.findById(brandId);
+                Product product = getProduct(
+                        faker,
+                        name,
+                        name + " : " + faker.lorem().words(80),
+                        faker.number().numberBetween(499, 30000)
+                );
 
+                Optional<Brand> optionalBrand = brandRepository.findById((long) faker.number().numberBetween(1,50));
                 optionalBrand.ifPresent(product::setBrand);
 
-                if (product.getBrand() == null) {
-                    continue;
-                }
                 productRepository.save(product);
             }
 
@@ -159,17 +164,131 @@ public class DataLoaderConfig implements CommandLineRunner {
         }
     }
 
+    public void createImages() {
+        if (0 == imageRepository.count()) {
+            List<Product> products = productRepository.findAll();
+            for (Product product : products) {
+                createImagesByProduct(product, true);
+
+                do {
+                    createImagesByProduct(product, false);
+                } while(hasProbability(1, 2));
+            }
+
+            imageRepository.flush();
+        }
+    }
+
+    public void createPurchase() {
+        if(0 == purchaseRepository.count()){
+            Faker faker = new Faker(Locale.of("fr"));
+
+            for (int i = 0; i < 500; i++) {
+                Purchase purchase = new Purchase();
+                String tmpNumber;
+                if (i < 10) {
+                    tmpNumber = "0000000000" + i;
+                } else if (i < 100) {
+                    tmpNumber = "000000000" + i;
+                } else {
+                    tmpNumber = "00000000" + i;
+                }
+                String number = "PUR-" + LocalDateTime.now().getYear() + "-" + tmpNumber;
+                purchase.setNumber(number);
+
+                User user;
+                List<Address> addresses;
+                Random random = new Random();
+
+                do {
+                    Long idUser = random.nextLong(1,100);
+                    Optional<User> optionalUser = userRepository.findById(idUser);
+                    user = optionalUser.orElseThrow();
+                    addresses = addressRepository.findAllByUser(user);
+                } while (addresses.isEmpty());
+
+                purchase.setUser(user);
+                purchase.setAddress(addresses.getFirst());
+
+                int year = user.getCreatedAt().getYear();
+                int currentYear = LocalDate.now().getYear();
+                int yearBetween = currentYear - year;
+                purchase.setCreatedAt(getRandomDate(faker, 0, yearBetween));
+
+                if (yearBetween > 1) {
+                    purchase.setStatus(EnumPurchaseStatus.DELIVERED.getValue());
+                } else {
+                    int status = faker.number().numberBetween(1, 5);
+                    switch (status) {
+                        case 1:
+                            purchase.setStatus(EnumPurchaseStatus.PENDING.getValue());
+                            break;
+                        case 2:
+                            purchase.setStatus(EnumPurchaseStatus.PAID.getValue());
+                            break;
+                        case 3:
+                            purchase.setStatus(EnumPurchaseStatus.SHIPPED.getValue());
+                            break;
+                        default:
+                            purchase.setStatus(EnumPurchaseStatus.CANCELLED.getValue());
+                            break;
+                    }
+                }
+
+                purchaseRepository.save(purchase);
+            }
+            purchaseRepository.flush();
+        }
+    }
+
+    private void createPurchaseProductByPurchase(Purchase purchase) {
+        Faker faker = new Faker(Locale.of("fr"));
+        PurchaseProduct purchaseProduct = new PurchaseProduct();
+        purchaseProduct.setPurchase(purchase);
+        purchaseProduct.setQuantity(faker.number().numberBetween(1, 6));
+
+        Optional<Product> productOptional = productRepository.findById(faker.number().numberBetween(1L, 300L));
+        productOptional.ifPresent(purchaseProduct::setProduct);
+
+        Float priceProduct = purchaseProduct.getProduct().getPrice();
+        purchaseProduct.setPrice(priceProduct);
+        if (hasProbability(1, 6)) {
+            purchaseProduct.setPrice((float) (priceProduct * 1.2));
+        }
+
+        purchaseProductRepository.save(purchaseProduct);
+    }
+
+    private Product getProduct(Faker faker, String label, String description, int price) {
+        Product product = new Product();
+        product.setLabel(label);
+        product.setCreatedAt(getRandomDate(faker, 0, 10));
+        product.setPrice((float) price);
+        product.setSlug(slugger.slugify(label));
+        product.setDescription(description);
+        return product;
+    }
+
     private LocalDateTime getRandomDate(Faker faker, int min, int max) {
-        return new java.sql.Date(faker.date().past(365 * Math.max(max, 1), TimeUnit.DAYS).getTime())
-                .toLocalDate()
-                .atTime(0, 0);
+        return new java.sql.Date(faker.date().birthday(min, max).getTime()).toLocalDate().atTime(0, 0);
+    }
+
+    private void createImagesByProduct(Product product, boolean isDefault) {
+        Image image = new Image();
+        Random rand = new Random();
+        image.setPath("https://picsum.photos/400/300?r=" + rand.nextInt(300));
+        image.setExtension("png");
+        image.setDefault(isDefault);
+        image.setProduct(product);
+        imageRepository.save(image);
     }
 
     private boolean hasProbability(int expected, int max) {
         Random random = new Random();
         // random.nextInt(max) = génère un entier aléatoire entre 0 et MAX
         // expected = la proba attendue
-        // Si le random est inférieur à expected, alors on renvoie true
+        // Si le random est inférieure ou égale à la prob, alors on renvoie true
         return random.nextInt(max) < expected;
     }
+
 }
