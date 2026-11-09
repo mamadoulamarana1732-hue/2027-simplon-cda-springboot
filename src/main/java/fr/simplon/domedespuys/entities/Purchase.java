@@ -1,5 +1,9 @@
 package fr.simplon.domedespuys.entities;
 
+import com.fasterxml.jackson.annotation.JsonView;
+import fr.simplon.domedespuys.view.BrandView;
+import fr.simplon.domedespuys.view.ProductView;
+import fr.simplon.domedespuys.view.PurchaseView;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,12 +22,15 @@ public class Purchase {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonView(PurchaseView.Id.class)
     private Long id;
 
     @Column(length = 20, unique = true, nullable = false)
+    @JsonView(PurchaseView.Number.class)
     private String number;
 
     @Column(nullable = false)
+    @JsonView(PurchaseView.CreatedAt.class)
     private LocalDateTime createdAt;
 
     @Column(nullable = false)
@@ -38,6 +45,7 @@ public class Purchase {
     private Address address;
 
     @OneToMany(mappedBy = "purchase")
+    @JsonView(PurchaseView.PurchaseProducts.class)
     List<PurchaseProduct> purchaseProducts = new ArrayList<>();
 
 }

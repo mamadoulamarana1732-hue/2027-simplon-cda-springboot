@@ -21,17 +21,19 @@ public class BrandRestController {
     private final BrandRepository brandRepository;
 
     @GetMapping
+    @JsonView(BrandView.BrandListView.class)
     public List<Brand> getBrands() {
         return brandRepository.findAll();
     }
 
     @GetMapping("/slug/{slug}")
-    @JsonView(BrandView.class)
+    @JsonView(BrandView.BrandDetailView.class)
     public Optional<Brand> getBrandBySlug(@PathVariable String slug) {
         return brandRepository.findBySlug(slug);
     }
 
     @GetMapping("/{id}")
+    @JsonView(BrandView.BrandDetailView.class)
     public Optional<Brand> getBrandById(@PathVariable String id) {
         return brandRepository.findById(Long.valueOf(id));
     }
