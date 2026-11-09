@@ -9,5 +9,5 @@ public class PurchaseView {
 
 
     public interface PurchaseListView extends Number, CreatedAt, Status,PurchaseProducts{}
-    public  interface PurchaseDetailView extends Id{}
+    public  interface PurchaseDetailView extends Id, Number, CreatedAt, Status, PurchaseProducts{}
 }

@@ -10,6 +10,6 @@ public class UserView {
     public interface CreatedAt{}
     public interface Addresses{}
 
-    public interface UserListView extends Email, Password, Firstname, Lastname, Phone{}
-    public interface UserDetailView extends CreatedAt, Addresses{}
+    public interface UserListView extends Email, Password, Lastname, Phone{}
+    public interface UserDetailView extends CreatedAt, Firstname, Addresses{}
 }
