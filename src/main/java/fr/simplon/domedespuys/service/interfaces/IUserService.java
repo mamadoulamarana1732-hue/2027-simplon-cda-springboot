@@ -10,4 +10,5 @@ public interface IUserService extends
         IDelete,
         IGetItem<User>
 {
+    User update(String id, UserPostDTO dto);
 }
