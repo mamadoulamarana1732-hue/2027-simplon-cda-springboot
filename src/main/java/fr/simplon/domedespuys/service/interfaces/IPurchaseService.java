@@ -7,7 +7,6 @@ public interface IPurchaseService extends
         ICreate<Purchase, PurchaseDTO>,
         IUpdate<Purchase, PurchaseDTO>,
         ICollection<Purchase>,
-        IGetItem<Purchase>,
-        IDelete
+        IGetItem<Purchase>
 {
 }
