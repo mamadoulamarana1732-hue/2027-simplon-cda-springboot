@@ -11,5 +11,4 @@ public class ProductPostDTO {
     private Float price;
     private String brand;
     private List<String> images;
-
 }
