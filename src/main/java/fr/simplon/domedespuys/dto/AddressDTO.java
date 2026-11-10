@@ -1,8 +1,5 @@
 package fr.simplon.domedespuys.dto;
 
-import lombok.Data;
-
-@Data
 public class AddressDTO {
     public String line;
     public String extraLine;

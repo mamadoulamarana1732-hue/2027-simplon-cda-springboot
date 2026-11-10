@@ -1,10 +1,7 @@
 package fr.simplon.domedespuys.dto;
 
-import lombok.Data;
-
 import java.util.Date;
 
-@Data
 public class UserDTO {
     public String email;
     public String password;
@@ -14,5 +11,4 @@ public class UserDTO {
     public String  firstName;
     public String lastName;
     public Date createdAt;
-
 }

@@ -1,9 +1,6 @@
 package fr.simplon.domedespuys.dto;
 
-import lombok.Data;
-
 import java.util.List;
-@Data
 public class ProductPutDTO {
     private String label;
     private String description;

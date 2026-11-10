@@ -1,6 +1,6 @@
 package fr.simplon.domedespuys.service.interfaces;
 
-public interface IImageService  extends
+public interface IImageService extends
         IDelete
 {
 }
