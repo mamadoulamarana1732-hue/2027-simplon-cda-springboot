@@ -1,6 +1,6 @@
 package fr.simplon.domedespuys.service;
 
-import fr.simplon.domedespuys.dto.ProductPostDTO;
+import fr.simplon.domedespuys.dto.ProductDTO;
 import fr.simplon.domedespuys.entities.Product;
 import fr.simplon.domedespuys.service.interfaces.IProductService;
 import lombok.AllArgsConstructor;
@@ -17,7 +17,7 @@ public class ProductServiceImpl implements IProductService {
     }
 
     @Override
-    public Product create(ProductPostDTO dto) {
+    public Product create(ProductDTO dto) {
         return null;
     }
 
@@ -32,7 +32,7 @@ public class ProductServiceImpl implements IProductService {
     }
 
     @Override
-    public Product update(String id, ProductPostDTO dto) {
+    public Product update(String id, ProductDTO dto) {
         return null;
     }
 }

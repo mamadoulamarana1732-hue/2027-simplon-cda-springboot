@@ -4,8 +4,6 @@ import java.util.Date;
 import java.util.List;
 
 public class PurchaseDTO {
-    private List<String> address;
-    private List<String> purchaseProducts;
-    private Date createdAt;
-    private List<String> status;
+    private Long addressId;
+    private List<PurchaseProductDTO> purchaseProducts;
 }
