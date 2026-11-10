@@ -1,13 +1,18 @@
 package fr.simplon.domedespuys.service;
 
 import fr.simplon.domedespuys.dto.UserDTO;
+import fr.simplon.domedespuys.entities.Brand;
 import fr.simplon.domedespuys.entities.User;
 import fr.simplon.domedespuys.service.interfaces.IUserService;
 
 public class UserServiceImpl implements IUserService {
     @Override
     public User create(UserDTO dto) {
-        return null;
+        User user = new User();
+        user.setLastname(dto.lastname);
+        user.setFirstname(dto.firstname);
+        user.setPassword(dto.password);
+        return user;
     }
     @Override
     public boolean delete(String id) {
