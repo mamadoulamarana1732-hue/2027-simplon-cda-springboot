@@ -8,8 +8,14 @@ import fr.simplon.domedespuys.view.AddressView;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
+@RestController
 @AllArgsConstructor
+@RequestMapping("/api/address")
 public class AddressRestController {
     private final IAddressService addressService;
     @PostMapping
