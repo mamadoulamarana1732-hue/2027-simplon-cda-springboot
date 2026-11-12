@@ -34,4 +34,6 @@ public class Image {
     @JoinColumn(nullable = false)
     private Product product;
 
+    public void setUrl(String url) {
+    }
 }

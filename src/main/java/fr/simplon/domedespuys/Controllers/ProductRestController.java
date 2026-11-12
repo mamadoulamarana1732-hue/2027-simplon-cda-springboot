@@ -2,7 +2,7 @@ package fr.simplon.domedespuys.Controllers;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import fr.simplon.domedespuys.entities.Product;
-import fr.simplon.domedespuys.repositories.ProductRepository;
+import fr.simplon.domedespuys.service.interfaces.IProductService;
 import fr.simplon.domedespuys.view.ProductView;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,14 +18,14 @@ import java.util.Optional;
 @RequestMapping("/api/product")
 public class ProductRestController {
 
-    private final ProductRepository productRepository;
+    private final IProductService productService;
 
     @GetMapping
     @JsonView(ProductView.ProductListView.class)
     public List<Product> getProducts() {
-        return productRepository.findAll();
+        return productService.getCollection();
     }
-
+    /*
     @GetMapping("/slug/{slug}")
     @JsonView(ProductView.ProductDetailView.class)
     public Optional<Product> getBrandBySlug(@PathVariable String slug) {
@@ -37,5 +37,5 @@ public class ProductRestController {
     public Optional<Product> getBrandById(@PathVariable String id) {
         return productRepository.findById(Long.valueOf(id));
     }
-
+*/
 }
