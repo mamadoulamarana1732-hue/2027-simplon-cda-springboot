@@ -6,6 +6,6 @@ public class ProductDTO {
     public String label;
     public String description;
     public Float price;
-    public String brandId;
+    public Long brandId;
     public List<ImageDTO> images;
 }

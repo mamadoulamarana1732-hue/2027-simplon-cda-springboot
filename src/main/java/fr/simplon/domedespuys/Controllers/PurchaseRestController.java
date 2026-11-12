@@ -1,11 +1,11 @@
 package fr.simplon.domedespuys.Controllers;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import fr.simplon.domedespuys.entities.Product;
 import fr.simplon.domedespuys.entities.Purchase;
-import fr.simplon.domedespuys.entities.User;
-import fr.simplon.domedespuys.repositories.PurchaseRepository;
+import fr.simplon.domedespuys.service.interfaces.IPurchaseService;
+import fr.simplon.domedespuys.view.ProductView;
 import fr.simplon.domedespuys.view.PurchaseView;
-import fr.simplon.domedespuys.view.UserView;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,17 +19,20 @@ import java.util.Optional;
 @AllArgsConstructor
 @RequestMapping("/api/purchase")
 public class PurchaseRestController {
-    private final PurchaseRepository purchaseRepository;
+    private final IPurchaseService purchaseService;
 
-    @GetMapping()
-    @JsonView(PurchaseView.PurchaseListView.class)
-    public List<Purchase> getPurchases() {
-        return purchaseRepository.findAll();
-    }
 
     @GetMapping("/{id}")
-    @JsonView(PurchaseView.PurchaseDetailView.class)
-    public Optional<Purchase> getPurchaseById(@PathVariable String id) {
-        return purchaseRepository.findById(Long.valueOf(id));
+    @JsonView(PurchaseView.PurchaseListView.class)
+    public Purchase getPurchaseById(@PathVariable String id) {
+        return purchaseService.getById(id);
     }
+
+
+    @GetMapping
+    @JsonView(PurchaseView.PurchaseListView.class)
+    public List<Purchase> getPurchases() {
+        return purchaseService.getCollection();
+    }
+
 }
