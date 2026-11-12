@@ -9,7 +9,9 @@ import fr.simplon.domedespuys.entities.Product;
 import fr.simplon.domedespuys.repositories.BrandRepository;
 import fr.simplon.domedespuys.repositories.ProductRepository;
 import fr.simplon.domedespuys.service.interfaces.IBrandService;
+import fr.simplon.domedespuys.service.interfaces.IImageService;
 import fr.simplon.domedespuys.service.interfaces.IProductService;
+import fr.simplon.domedespuys.utils.Slugger;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +21,9 @@ import java.util.List;
 @Service
 @AllArgsConstructor
 public class ProductServiceImpl implements IProductService {
+    private Slugger slugger;
     private ProductRepository productRepository;
+    private final IImageService imageService;
     private final IBrandService brandService;
 
     @Override
@@ -39,14 +43,15 @@ public class ProductServiceImpl implements IProductService {
         Product product = new Product();
         product.setLabel(dto.label);
         product.setDescription(dto.description);
+        product.setSlug(slugger.slugify(dto.label));
         product.setPrice(dto.price);
         product.setCreatedAt(LocalDateTime.now());
-       // product.setBrand(brandService.getById(dto.brandId));
+        product.setBrand(brandService.getById(String.valueOf(dto.brandId)));
         productRepository.saveAndFlush(product);
 
-      /*  for(ImageDTO imageDTO : dto.images) {
+      for(ImageDTO imageDTO : dto.images) {
             imageService.create(imageDTO, product);
-        }*/
+        }
 
         productRepository.flush();
         return product;
