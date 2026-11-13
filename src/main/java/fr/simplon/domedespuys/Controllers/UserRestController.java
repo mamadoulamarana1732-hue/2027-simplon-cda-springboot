@@ -34,7 +34,8 @@ public class UserRestController {
 
     @PutMapping("/{id}")
     @JsonView(UserView.UserDetailView.class)
-    public User updateUser(@PathVariable String id, @RequestBody UserPutDTO dto) {
+    @ResponseStatus(HttpStatus.CREATED)
+    public User updateUser(@Valid @PathVariable String id, @RequestBody UserPutDTO dto) {
         return userService.update(id, dto);
     }
 }
