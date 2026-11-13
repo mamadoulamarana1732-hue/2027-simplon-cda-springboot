@@ -20,7 +20,7 @@ public class AddressServiceImpl implements IAddressService {
 
     @Override
     public Address create(AddressDTO dto) {
-        User user = userService.getById("1L");
+        User user = userService.getById("200");
 
         Address address = new Address();
         dtoToObject(dto, address);

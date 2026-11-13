@@ -28,5 +28,17 @@ public class AddressRestController {
         return addressService.delete(id);
     }
 
+    @PutMapping("/{id}")
+    @JsonView(AddressView.AddressDetailView.class)
+    public Address updateAddress(@PathVariable String id, @RequestBody AddressDTO dto) {
+        return addressService.update(id, dto);
+    }
+
+
+    @GetMapping("/{id}")
+    @JsonView(AddressView.AddressDetailView.class)
+    public Address getBrandById(@PathVariable String id) {
+        return addressService.getById(id);
+    }
 
 }
