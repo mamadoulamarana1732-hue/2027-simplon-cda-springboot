@@ -6,7 +6,9 @@ import fr.simplon.domedespuys.dto.UserPutDTO;
 import fr.simplon.domedespuys.entities.User;
 import fr.simplon.domedespuys.service.interfaces.IUserService;
 import fr.simplon.domedespuys.view.UserView;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -25,7 +27,8 @@ public class UserRestController {
 
     @PostMapping
     @JsonView(UserView.UserDetailView.class)
-    public User createUser(@RequestBody UserPostDTO dto) {
+    @ResponseStatus(HttpStatus.CREATED)
+    public User createUser(@Valid @RequestBody UserPostDTO dto) {
         return userService.create(dto);
     }
 

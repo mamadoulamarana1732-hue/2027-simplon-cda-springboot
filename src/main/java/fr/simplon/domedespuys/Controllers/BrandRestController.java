@@ -7,6 +7,7 @@ import fr.simplon.domedespuys.service.interfaces.IBrandService;
 import fr.simplon.domedespuys.view.BrandView;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -32,6 +33,7 @@ public class BrandRestController {
 
     @PostMapping
     @JsonView(BrandView.BrandDetailView.class)
+    @ResponseStatus(HttpStatus.CREATED)
 
     public Brand createBrand(@Valid @RequestBody BrandDTO dto) {
         return brandService.create(dto);

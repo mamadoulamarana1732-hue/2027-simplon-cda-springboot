@@ -5,7 +5,9 @@ import fr.simplon.domedespuys.dto.ProductDTO;
 import fr.simplon.domedespuys.entities.Product;
 import fr.simplon.domedespuys.service.interfaces.IProductService;
 import fr.simplon.domedespuys.view.ProductView;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -32,7 +34,8 @@ public class ProductRestController {
 
     @PostMapping
     @JsonView(ProductView.ProductDetailView.class)
-    public Product create(@RequestBody ProductDTO productDTO) {
+    @ResponseStatus(HttpStatus.CREATED)
+    public Product create(@Valid @RequestBody ProductDTO productDTO) {
         return productService.create(productDTO);
     }
 }

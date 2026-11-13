@@ -1,6 +1,5 @@
 package fr.simplon.domedespuys.dto;
 
-import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotBlank;
 import org.hibernate.validator.constraints.Length;
 

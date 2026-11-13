@@ -35,5 +35,6 @@ public class Image {
     private Product product;
 
     public void setUrl(String url) {
+
     }
 }
