@@ -1,10 +1,8 @@
 package fr.simplon.domedespuys.Controllers;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import fr.simplon.domedespuys.entities.Product;
 import fr.simplon.domedespuys.entities.Purchase;
 import fr.simplon.domedespuys.service.interfaces.IPurchaseService;
-import fr.simplon.domedespuys.view.ProductView;
 import fr.simplon.domedespuys.view.PurchaseView;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @AllArgsConstructor
@@ -34,5 +31,4 @@ public class PurchaseRestController {
     public List<Purchase> getPurchases() {
         return purchaseService.getCollection();
     }
-
 }

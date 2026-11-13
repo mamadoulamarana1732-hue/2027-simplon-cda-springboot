@@ -11,6 +11,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+@RestControllerAdvice
 @RestController
 @AllArgsConstructor
 @RequestMapping("/api/user")

@@ -1,9 +1,7 @@
 package fr.simplon.domedespuys.service;
 
-import fr.simplon.domedespuys.dto.BrandDTO;
 import fr.simplon.domedespuys.dto.UserPostDTO;
 import fr.simplon.domedespuys.dto.UserPutDTO;
-import fr.simplon.domedespuys.entities.Brand;
 import fr.simplon.domedespuys.entities.User;
 import fr.simplon.domedespuys.repositories.UserRepository;
 import fr.simplon.domedespuys.service.interfaces.IUserService;
@@ -28,7 +26,7 @@ public class UserServiceImpl implements IUserService {
         user.setLastname(dto.lastname);
         user.setFirstname(dto.firstname);
         user.setPassword(dto.password);
-
+        //récupération de la date en temps reel
         LocalDateTime date = LocalDateTime.now();
         user.setCreatedAt(date);
         userRepository.saveAndFlush(user);
@@ -47,7 +45,7 @@ public class UserServiceImpl implements IUserService {
         if (user != null){
             user.setLastname(dto.lastname);
             user.setFirstname(dto.firstname);
-            user.setPassword(dto.phone);
+            user.setPhone(dto.phone);
             userRepository.saveAndFlush(user);
         }
         return user;
