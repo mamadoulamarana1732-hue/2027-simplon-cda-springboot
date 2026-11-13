@@ -25,7 +25,6 @@ public class PurchaseRestController {
         return purchaseService.getById(id);
     }
 
-
     @GetMapping
     @JsonView(PurchaseView.PurchaseListView.class)
     public List<Purchase> getPurchases() {

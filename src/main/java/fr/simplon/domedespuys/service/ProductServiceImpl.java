@@ -1,12 +1,11 @@
 package fr.simplon.domedespuys.service;
 
-import fr.simplon.domedespuys.dto.BrandDTO;
+import fr.simplon.domedespuys.dto.AddressDTO;
 import fr.simplon.domedespuys.dto.ImageDTO;
 import fr.simplon.domedespuys.dto.ProductDTO;
-import fr.simplon.domedespuys.entities.Brand;
-import fr.simplon.domedespuys.entities.Image;
+import fr.simplon.domedespuys.entities.Address;
 import fr.simplon.domedespuys.entities.Product;
-import fr.simplon.domedespuys.repositories.BrandRepository;
+import fr.simplon.domedespuys.entities.PurchaseProduct;
 import fr.simplon.domedespuys.repositories.ProductRepository;
 import fr.simplon.domedespuys.service.interfaces.IBrandService;
 import fr.simplon.domedespuys.service.interfaces.IImageService;
@@ -41,11 +40,7 @@ public class ProductServiceImpl implements IProductService {
     @Override
     public Product create(ProductDTO dto) {
         Product product = new Product();
-        product.setLabel(dto.label);
-        product.setDescription(dto.description);
-        product.setSlug(slugger.slugify(dto.label));
-        product.setPrice(dto.price);
-        product.setCreatedAt(LocalDateTime.now());
+        dtoToObject(dto, product);
         product.setBrand(brandService.getById(String.valueOf(dto.brandId)));
         productRepository.saveAndFlush(product);
 
@@ -62,28 +57,29 @@ public class ProductServiceImpl implements IProductService {
         return false;
     }
 
-
     @Override
     public Product update(String id, ProductDTO dto) {
         Product product = getById(id);
         if (product != null) {
-            product.setLabel(dto.label);
-            product.setDescription(dto.description);
-            product.setSlug(slugger.slugify(dto.label));
-            product.setPrice(dto.price);
-            product.setCreatedAt(LocalDateTime.now());
+            dtoToObject(dto, product);
             product.setBrand(brandService.getById(String.valueOf(dto.brandId)));
             productRepository.saveAndFlush(product);
 
             for(ImageDTO imageDTO : dto.images) {
                 imageService.create(imageDTO, product);
             }
-
             productRepository.flush();
-         //   return product;
         }
         return product;
 
+    }
+
+    private void dtoToObject(ProductDTO dto, Product product) {
+        product.setLabel(dto.label);
+        product.setDescription(dto.description);
+        product.setSlug(slugger.slugify(dto.label));
+        product.setPrice(dto.price);
+        product.setCreatedAt(LocalDateTime.now());
     }
 
 }

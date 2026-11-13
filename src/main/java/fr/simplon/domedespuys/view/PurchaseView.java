@@ -7,7 +7,6 @@ public class PurchaseView {
     public interface Status{}
     public interface PurchaseProducts {}
 
-
     public interface PurchaseListView extends Number, CreatedAt, Status,PurchaseProducts{}
     public  interface PurchaseDetailView extends Id, Number, CreatedAt, Status, PurchaseProducts{}
 }
