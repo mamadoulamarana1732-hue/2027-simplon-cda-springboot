@@ -11,7 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @AllArgsConstructor
@@ -37,5 +36,11 @@ public class ProductRestController {
     @ResponseStatus(HttpStatus.CREATED)
     public Product create(@Valid @RequestBody ProductDTO productDTO) {
         return productService.create(productDTO);
+    }
+
+    @PutMapping("/{id}")
+    @JsonView(ProductView.ProductDetailView.class)
+    public Product updateProduct(@PathVariable String id, @RequestBody ProductDTO dto) {
+        return productService.update(id, dto);
     }
 }

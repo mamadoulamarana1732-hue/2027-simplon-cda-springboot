@@ -65,9 +65,25 @@ public class ProductServiceImpl implements IProductService {
 
     @Override
     public Product update(String id, ProductDTO dto) {
-        return null;
+        Product product = getById(id);
+        if (product != null) {
+            product.setLabel(dto.label);
+            product.setDescription(dto.description);
+            product.setSlug(slugger.slugify(dto.label));
+            product.setPrice(dto.price);
+            product.setCreatedAt(LocalDateTime.now());
+            product.setBrand(brandService.getById(String.valueOf(dto.brandId)));
+            productRepository.saveAndFlush(product);
+
+            for(ImageDTO imageDTO : dto.images) {
+                imageService.create(imageDTO, product);
+            }
+
+            productRepository.flush();
+         //   return product;
+        }
+        return product;
+
     }
-
-
 
 }
